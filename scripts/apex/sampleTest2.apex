@@ -21,10 +21,6 @@
 // Page layouts and record types
 // Custom objects and fields
 
-
-// Mock Test Questions
-// Here are some example questions to get you started:
-
 // Apex Programming
 
 // Write a trigger to update a related record whenever a record on the Account object is created or edited.
@@ -300,25 +296,6 @@
 // Group fields into sections called cards for better organization and user experience on mobile devices.
 // Define the order and grouping of fields within these cards.
 // Can you help me with this? 'What are the different types of page layouts in Salesforce?' This is part of a mock test for Salesforce Developer.
-// Absolutely! Page layouts in Salesforce are used to customize the layout and organization of fields, related lists, and other components on record detail and edit pages. Here are the different types of page layouts you can create and use in Salesforce:
-// 1. Standard Page Layouts
-// These are the default layouts provided by Salesforce for standard and custom objects. They are used to:
-// Customize the fields and related lists visible on the record detail and edit pages.
-// Control which fields are read-only, required, or hidden.
-// Define the layout and organization of buttons, actions, and related lists.
-// 2. Mini Page Layouts
-// Mini page layouts are used to control the fields displayed in the mini view of a record, which appears in the:
-// Console tab highlights panel.
-// Lookup hover details.
-// Related list hover details.
-// 3. Compact Layouts
-// Compact layouts control which fields appear in the record’s highlights panel at the top of the page and in the expanded lookup card:
-// They are designed to provide a quick, concise view of a record’s key fields.
-// Typically used in Salesforce mobile app and Lightning Experience.
-// 4. Mobile Card Layouts
-// Mobile card layouts are used specifically in the Salesforce mobile app to:
-// Group fields into sections called cards for better organization and user experience on mobile devices.
-// Define the order and grouping of fields within these cards.
 // 5. Visualforce Pages
 // While not a type of page layout per se, Visualforce pages can be used to create highly customized and branded user interfaces for record detail and edit pages:
 // They offer the flexibility to include custom logic, styling, and components.

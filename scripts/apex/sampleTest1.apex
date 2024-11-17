@@ -10,12 +10,47 @@
 // Integer result = MathOperations.sumOfTwoIntegers(5, 10);
 // System.debug('The sum is: ' + result); // This will output: The sum is: 15
 
+// System.debug is used to print information to the debug log. This is particularly useful for understanding the state of your variables, the flow of your logic, and for troubleshooting issues.
+// The basic syntax is System.debug(object);, where object can be any Apex expression or variable.
+
+// Data types in Apex
+// Primitive Data Types:
+// Integer: Represents 32-bit numbers.
+// Long: Represents 64-bit numbers.
+// Double: Represents 64-bit double-precision floating-point numbers.
+// Decimal: Represents numbers with fixed decimal places.
+// String: Represents sequences of characters.
+// Boolean: Represents true or false values.
+// Date: Represents a date without a time zone.
+// Time: Represents a time of day without a date.
+// Datetime: Represents both date and time.
+// Collection Data Types:
+// List: An ordered collection of elements.
+// Set: An unordered collection of unique elements.
+// Map: A collection of key-value pairs.
+// SObject Types:
+// Standard Objects: Predefined objects provided by Salesforce (e.g., Account, Contact).
+// Custom Objects: User-defined objects.
+// User-Defined Types:
+// Classes: Custom classes you define in your Apex code.
+// Enums: Lists of constants.
+
 // Question 2: SOQL Queries
 // Write a SOQL query to fetch the first name and last name of all Contacts where the Account name is "Acme".
 
 // SELECT FirstName, LastName 
 // FROM Contact 
 // WHERE Account.Name = 'Acme'
+
+// SELECT Name, Phone FROM Contact WHERE Email LIKE '%example.com'
+// SELECT Name, Industry FROM Account WHERE Industry = 'Technology' ORDER BY Name
+
+// SOQL supports aggregate functions like COUNT(), SUM(), AVG(), etc.
+// SELECT COUNT() FROM Account WHERE Industry = 'Technology'
+
+// SOQL supports querying relationships between objects. You can traverse parent-to-child and child-to-parent relationships.
+// Parent to child: SELECT Name, (SELECT LastName FROM Contacts) FROM Account
+// Child to parent: SELECT LastName, Account.Name FROM Contact
 
 // Question 3: Triggers
 // Create an Apex trigger on the Contact object that updates the LastModifiedDate of the parent Account whenever a Contact is inserted or updated.
@@ -51,14 +86,14 @@
 
 // global class UpdateLastModifiedByBatch implements Database.Batchable<sObject> {
 //     global Database.QueryLocator start(Database.BatchableContext BC) {
-//         return Database.getQueryLocator([SELECT   
+//         return Database.getQueryLocator([SELECT
 //  Id FROM Account]);
 //     }
 
-//     global void execute(Database.BatchableContext   
+//     global void execute(Database.BatchableContext
 //  BC, List<Account> scope) {
 //         List<Account> accountsToUpdate = new List<Account>();
-//         for (Account   
+//         for (Account
 //  acct : scope) {
 //             acct.LastModifiedById = UserInfo.getUserId();
 //             accountsToUpdate.add(acct);
@@ -72,6 +107,23 @@
 // }
 
 // Database.executeBatch(new UpdateLastModifiedByBatch());
+
+// Batch Apex is a powerful feature in Salesforce that allows you to handle large volumes of data and long-running processes asynchronously.
+// To implement a batch job, your Apex class must implement the Database.Batchable interface, which requires you to define three methods: 
+// START METHOD: Prepares the batch job for execution by providing the scope of data to be processed.
+// global Database.QueryLocator start(Database.BatchableContext BC) { return Database.getQueryLocator('SELECT Id, Name FROM Account'); }
+// EXECUTE METHOD: Contains the actual logic to process each batch of data. Salesforce breaks down the large dataset into smaller, manageable chunks (or batches).
+// global void execute(Database.BatchableContext BC, List<Account> scope) {
+//     for (Account acc : scope) {
+//         acc.Name = acc.Name + ' - Processed';
+//     }
+//     update scope;
+// }
+// FINISH METHOD: Contains post-processing logic or operations that need to be performed after all batches are processed.
+// global void finish(Database.BatchableContext BC) {
+//     // Perform post-processing tasks, like sending an email notification
+//     System.debug('Batch job completed successfully.');
+// }
 
 // Question 5: Future Methods
 // Create a Future method that performs a callout to a specified URL and logs the response to a custom object called CalloutLog__c.
@@ -107,6 +159,31 @@
 // From your Apex class or trigger, call the makeCallout method with the desired URL:
 // makeCallout('https://api.example.com/data');
 
+// Future methods are a way to run specific code asynchronously. They are typically used to make callouts to external systems, perform operations that might take a long time, or handle tasks that don't need to be processed immediately.
+
+// public class AccountUpdater {
+    
+//     @future(callout=true)
+//     public static void updateAccountWithExternalData(Set<Id> accountIds) {
+//         // Make a callout to an external web service
+//         Http http = new Http();
+//         HttpRequest request = new HttpRequest();
+//         request.setEndpoint('https://api.example.com/accounts');
+//         request.setMethod('GET');
+        
+//         HttpResponse response = http.send(request);
+        
+//         if (response.getStatusCode() == 200) {
+//             // Parse the response and update accounts
+//             List<Account> accountsToUpdate = [SELECT Id, Name FROM Account WHERE Id IN :accountIds];
+//             for (Account acc : accountsToUpdate) {
+//                 acc.Name = response.getBody() + ' - Updated Asynchronously';
+//             }
+//             update accountsToUpdate;
+//         }
+//     }
+// }
+
 // Question 6: Queueable Apex
 // Write a Queueable class that updates the 'LeadSource' field of all Leads created today to 'Web'.
 
@@ -123,6 +200,15 @@
 // }
 
 // System.enqueueJob(new UpdateLeadSource());
+
+// Queueable Apex is a powerful feature in Salesforce that allows you to run complex or long-running operations asynchronously, similar to Future methods but with more advanced features such as chaining jobs and maintaining state.
+
+// Complex Business Processes:
+// Queueable Apex is ideal for breaking down complex business processes that need to be handled asynchronously or in multiple steps.
+// Integration with External Systems:
+// Use Queueable Apex for making callouts to external systems, especially when dealing with large sets of data.
+// Bulk Data Processing:
+// Process large volumes of records by queuing multiple jobs to handle different batches of data.
 
 // Question 7: Test Classes
 // Create a test class for the following method:
@@ -167,6 +253,15 @@
 // Write a SOSL query to find any Contact whose name starts with 'John' or whose Email contains '@example.com'.
 
 // FIND {Contact(Name:John* OR Email:*example.com*)} 
+
+// SOSL (Salesforce Object Search Language) is used to perform text searches in records. It can search for text across multiple objects and fields, providing a quick and efficient way to find records containing the specified text.
+// Unlike SOQL, which queries data from a single object at a time, SOSL can search across multiple objects in a single query.
+// The results of a SOSL query are returned as a list of lists, where each list corresponds to the results from a particular object.
+
+// FIND 'Acme*'
+// IN NAME FIELDS
+// RETURNING Account(Id, Name), Contact(Id, FirstName, LastName)
+
 
 // Question 9: Validation Rules
 // Create a validation rule on the Opportunity object to ensure that the Close Date is always in the future.
