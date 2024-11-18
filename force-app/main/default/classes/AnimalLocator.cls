@@ -1,27 +1,41 @@
 public class AnimalLocator {
-    public static String getAnimalNameById(Integer id) {
-        // Construct the endpoint URL with the given ID
-        String endpoint = 'https://th-apex-http-callout.herokuapp.com/animals/' + id;
 
-        // Create an instance of Http and HttpRequest
+    public static String getAnimalNameById(Integer Id) {
+        System.debug('Starting getAnimalNameById with Id: ' + Id);
+
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        request.setEndpoint(endpoint);
+        request.setEndpoint('https://th-apex-http-callout.herokuapp.com/animals/' + Id);
         request.setMethod('GET');
 
-        // Send the request and get the response
-        HttpResponse response = http.send(request);
-        
-        // Check if the response status code is 200 (OK)
-        if (response.getStatusCode() == 200) {
-            // Parse the response JSON
-            Map<String, Object> resultMap = (Map<String, Object>) JSON.deserializeUntyped(response.getBody());
-            // Extract and return the name property
-            if (resultMap.containsKey('name')) {
-                return (String) resultMap.get('name');
+        try {
+            HttpResponse response = http.send(request);
+            System.debug('Response status code: ' + response.getStatusCode());
+
+            if (response.getStatusCode() == 200) {
+                String responseBody = response.getBody();
+                System.debug('Response body: ' + responseBody);
+
+                if(responseBody == null || responseBody == '{}' || responseBody == 'null') {
+                    return 'Animal not found';
+                }
+
+                Map<String, Object> result = (Map<String, Object>) JSON.deserializeUntyped(responseBody);
+                String animalName = (String) result.get('name');
+                System.debug('Animal name: ' + animalName);
+
+                if(animalName == null) {
+                    return 'Animal not found';
+                }
+
+                return animalName;
+            } else {
+                System.debug('Error response: ' + response.getBody());
+                return 'Animal not found';
             }
+        } catch (Exception e) {
+            System.debug('Error fetching animal name: ' + e.getMessage());
+            return 'Error fetching animal name';
         }
-        // Return null or handle error case if the status code is not 200
-        return null;
     }
 }
